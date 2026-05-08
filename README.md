@@ -2,6 +2,15 @@
 
 This project is an ESPHome-based smart IR blaster built on an **ESP32-C3**, designed to control a Samsung air conditioner and monitor room conditions using sensors.
 
+
+<img src="examples/img.png" width="320" alt="demo">
+
+---
+<img src="examples/1.jpg" width="320" alt="demo">
+<img src="examples/2.jpg" width="320" alt="demo">
+
+
+
 It includes:
 - 📡 IR transmitter (Samsung AC control via heatpumpir)
 - 📥 IR receiver (signal learning / debugging)
