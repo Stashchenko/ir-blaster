@@ -14,8 +14,6 @@ This project is an ESPHome-based smart IR blaster built on an **ESP32-C3**, desi
 It includes:
 - 📡 IR transmitter (Samsung AC control via heatpumpir)
 - 📥 IR receiver (signal learning / debugging)
-- 🌡️ AHT20 temperature + humidity sensor
-- 🌬️ BMP280 pressure sensor
 - 📶 WiFi + Home Assistant integration
 
 ---
@@ -25,9 +23,6 @@ It includes:
 ## Controller
 - ESP32-C3 DevKitM-1
 
-## Sensors
-- AHT20 (temperature + humidity)
-- BMP280 (pressure)
 
 ## IR system
 - IR LED (transmitter)
@@ -42,8 +37,6 @@ It includes:
 
 | Component | Pin |
 |----------|-----|
-| AHT20 / BMP280 (I2C SDA) | GPIO4 |
-| AHT20 / BMP280 (I2C SCL) | GPIO5 |
 | IR Transmitter (signal) | GPIO7 |
 | IR Receiver (OUT) | GPIO6 |
 | GND | GND |
@@ -82,10 +75,6 @@ Built using **ESPHome (ESP-IDF framework)**.
 
 ## Features
 
-### 🌡️ Sensors
-- AHT20 temperature + humidity
-- BMP280 pressure sensor
-- Software calibration offsets (via Home Assistant)
 
 ### 📡 IR Control
 - Samsung AC control via:
