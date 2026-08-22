@@ -1,7 +1,6 @@
 esphome:
   name: ac-ir-blaster
   friendly_name: AC IRBlaster
-
 esp32:
   board: esp32-c3-devkitm-1
   framework:
@@ -56,14 +55,10 @@ esp32_ble:
 
 esp32_ble_tracker:
   scan_parameters:
-    # Don't auto start BLE scanning, we control it in the `api` block's automation.
-    continuous: False
-    active: True  # send scan-request packets to gather more info, like device name for some devices.
-    interval: 1000ms  # default 1000ms - how long to spend on each advert channel
-    window:   300ms  # default 30ms - how long to actually "listen" in each interval. Reduce this if device is unstable.
-    # If the device cannot keep up or becomes unstable, reduce the "window" setting. This may be
-    # required if your device is controlling other sensors or doing PWM for lights etc.
-
+    continuous: false
+    active: false
+    interval: 1000ms
+    window: 300ms
 bluetooth_proxy:
   active: true
   connection_slots: 2
@@ -96,6 +91,7 @@ climate:
     max_temperature: 30
     horizontal_default: middle
     vertical_default: middle
+    icon: "mdi:air-conditioner"
 binary_sensor:
   - platform: status
     name: "Device Status"
