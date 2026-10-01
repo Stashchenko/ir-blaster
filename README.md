@@ -1,105 +1,176 @@
-# 🌡️ ESP32-C3 IR Blaster (Samsung AC + Sensors)
+# 📡 ESP32-C3 IR Proxy
 
-This project is an ESPHome-based smart IR blaster built on an **ESP32-C3**, designed to control a Samsung air conditioner and monitor room conditions using sensors.
+An **ESPHome-based IR transmitter and receiver proxy** built around the **ESP32-C3 DevKitM-1**.
 
+The device provides an IR transmitter and receiver to Home Assistant through ESPHome and `ir_rf_proxy`. It can be used
+as a network-connected bridge for sending and receiving infrared remote-control signals.
 
-<img src="examples/img.png" width="320" alt="demo">
+The ESP32-C3 also provides **Bluetooth Proxy** functionality for Home Assistant.
 
 ---
-<img src="examples/1.jpg" width="320" alt="demo">
-<img src="examples/2.jpg" width="320" alt="demo">
 
+It can be used with projects such as:
 
+- 🔧 [HAIR](https://github.com/DAB-LABS/HAIR) — learn, manage and automate IR devices directly from Home Assistant
+- 📚 [SmartIR](https://github.com/smartHomeHub/SmartIR) — use its database of device-specific IR command codes
+- 🏠 Home Assistant automations and scripts
+- 📡 Other software that can communicate with
+  the [ESPHome IR proxy](https://github.com/esphome/infrared-proxies/blob/main/xiao-ir-mate/xiao-ir-mate.yaml)
 
-It includes:
-- 📡 IR transmitter (Samsung AC control via heatpumpir)
-- 📥 IR receiver (signal learning / debugging)
-- 📶 WiFi + Home Assistant integration
+## ✨ Features
+
+* 📡 IR transmitter
+* 📥 IR receiver
+* 🔁 IR RF Proxy integration
+* 🏠 Home Assistant integration
+* 📶 Wi-Fi connectivity
+* 🦋 Bluetooth Proxy
+* 🔄 OTA firmware updates
+* 🔐 Encrypted ESPHome API
+* 📊 Wi-Fi signal diagnostics
+* ⚡ ESP32-C3 based
+* 🛜 Network-connected remote-control bridge
 
 ---
 
 # 🧰 Hardware
 
 ## Controller
-- ESP32-C3 DevKitM-1
 
+* **ESP32-C3 DevKitM-1**
 
-## IR system
-- IR LED (transmitter)
-- NPN transistor (2N2222A)
-- IR receiver (VS1838B)
+## IR Transmitter
+
+* IR LED
+* 2N2222A NPN transistor
+* 1 kΩ base resistor
+* ~100 Ω current-limiting resistor
+* 5 V supply
+
+## IR Receiver
+
+* VS1838B or compatible 38 kHz IR receiver
 
 ---
 
 # 🔌 Wiring
 
-## ESP32-C3 GPIO map
+## GPIO Map
 
-| Component | Pin |
-|----------|-----|
-| IR Transmitter (signal) | GPIO7 |
-| IR Receiver (OUT) | GPIO6 |
-| GND | GND |
-| VCC (sensors) | 3.3V |
-
----
-
-## 📡 IR Transmitter wiring
-- ESP32 GPIO7 → 1KΩ resistor → base (2N2222A)
-- Emitter → GND
-- Collector → IR LED cathode (-)
-- IR LED anode (+) → 5V with resistor ~100Ω
+| Component           | ESP32-C3 |
+|---------------------|---------:|
+| IR Transmitter      |    GPIO7 |
+| IR Receiver OUT     |    GPIO6 |
+| Sensor/Receiver VCC |    3.3 V |
+| GND                 |      GND |
 
 ---
 
-## 📥 IR Receiver (VS1838B)
+# 📡 IR Transmitter
 
-| Pin | Connection |
-|----|------------|
-| OUT | GPIO6 |
-| VCC | 3.3V |
-| GND | GND |
+The IR LED is driven using a **2N2222A transistor**.
 
-👉 If pins are not labeled:
-- Longer leg = VCC
-- Middle = OUT
-- Short leg = GND
+```text
+ESP32-C3 GPIO7
+      │
+     1kΩ
+      │
+      ▼
+   2N2222A
+   ┌───────┐
+   │ Base  │
+   │       │
+   │Emitter├──────── GND
+   │       │
+   │Collector
+   └───┬───┘
+       │
+       ▼
+ IR LED cathode (-)
+
+ IR LED anode (+)
+       │
+      ~100Ω
+       │
+       ▼
+      +5V
+```
+
+### Connections
+
+* **GPIO7 → 1 kΩ → transistor base**
+* **Emitter → GND**
+* **Collector → IR LED cathode (-)**
+* **IR LED anode (+) → ~100 Ω → 5 V**
+
+> ⚠️ Check the pinout of your specific 2N2222A transistor before wiring it.
 
 ---
 
-# 🧠 Firmware
+# 📥 IR Receiver
 
-Built using **ESPHome (ESP-IDF framework)**.
+The project uses a **VS1838B** IR receiver.
 
----
+| VS1838B | ESP32-C3 |
+|---------|----------|
+| OUT     | GPIO6    |
+| VCC     | 3.3 V    |
+| GND     | GND      |
 
-## Features
+The receiver is configured as an inverted input with an internal pull-up.
 
-
-### 📡 IR Control
-- Samsung AC control via:
-  - `heatpumpir`
-- Protocol tested:
-  - `samsung_aqv`
-
-### 📥 IR Learning
-- Remote receiver enabled
-- Logs raw IR signals in Pronto format
 
 ---
 
-# ❄️ Climate Control
+# 🔁 IR Proxy
 
-Samsung AC integration:
+The main purpose of this project is to expose the IR transmitter and receiver as an **IR proxy**. The transmitter is
+connected to the ESPHome remote transmitter. This allows Home Assistant to use the ESP32-C3 as a network-connected IR
+proxy.
 
-```yaml
-climate:
-  - platform: heatpumpir
-    name: "Samsung AC"
-    transmitter_id: ir_tx
-    protocol: samsung_aqv
-    sensor: room_temperature
-    min_temperature: 16
-    max_temperature: 30
-    vertical_default: middle
-    horizontal_default: middle
+---
+
+# 🏠 Home Assistant
+
+Once connected to Home Assistant, the device exposes the IR proxy functionality together with its diagnostic entities.
+
+The general architecture is:
+
+```text
+             Home Assistant
+                    │
+                    │ ESPHome API
+                    ▼
+             ┌──────────────┐
+             │   ESP32-C3   │
+             │  IR Proxy    │
+             └──────┬───────┘
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+    IR Transmitter        IR Receiver
+       GPIO7                GPIO6
+          │                   │
+          ▼                   ▼
+       IR LED              VS1838B
+```
+
+# 🛠️ Use Cases
+
+Because this project exposes the IR hardware as a proxy rather than implementing a specific appliance protocol, it can
+be used with different IR-controlled devices.
+
+Examples include:
+
+* TVs
+* Set-top boxes
+* Audio equipment
+* Air conditioners
+* Fans
+* Media players
+* Other consumer IR equipment
+
+The ESP32-C3 itself does not need to know which device is being controlled. It provides the **IR transmit and receive
+hardware**, while the higher-level control logic can be handled by Home Assistant or another compatible system.
+The ESP32-C3 acts as the physical IR gateway. Hair, when used, provides the device-specific command definitions on the
+Home Assistant side.

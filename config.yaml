@@ -4,7 +4,7 @@ esphome:
 esp32:
   board: esp32-c3-devkitm-1
   framework:
-    type: arduino
+    type: esp-idf
     sdkconfig_options:
       # @grigi found in testing that these options resulted in better responsiveness.
       # BLE 4.2 is supported by ALL ESP32 boards that have bluetooth, the original and derivatives.
@@ -38,8 +38,8 @@ ota:
     password: "65751248db00db7a46a00144a4320b33"
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: !secret ha_wifi
+  password: !secret ha_wifi_pass
   ap:
     ssid: "IRBlaster"
     password: "ysh3EjULOExU"
